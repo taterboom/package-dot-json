@@ -21,7 +21,7 @@ const Main = (props: MainProps) => {
     <div>
       <input
         ref={inputRef}
-        className="px-1"
+        className="px-1 bg-neutral-700/70"
         defaultValue={router.query.name}
         onKeyUp={(e) => {
           if (e.key === "Enter") {
