@@ -18,7 +18,7 @@ const Main = (props: MainProps) => {
     router.push("/" + searchName)
   }
   return (
-    <div>
+    <div className="max-w-full">
       <input
         ref={inputRef}
         className="px-1 bg-neutral-700/70"

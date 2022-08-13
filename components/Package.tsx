@@ -81,7 +81,7 @@ const PackageContent = (props: PackageContentProps) => {
         {starCountError ? `Error` : starCount === undefined ? "..." : starCount}
       </a>
       <div className="mt-2">
-        <table>
+        <table className="w-full">
           <tbody>
             {DEPS.filter((dep) => dep in packageJson).map((dep) => (
               <Fragment key={dep}>
