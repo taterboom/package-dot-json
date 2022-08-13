@@ -21,7 +21,8 @@ const Main = (props: MainProps) => {
     <div className="max-w-full">
       <input
         ref={inputRef}
-        className="px-1 bg-neutral-700/70"
+        className="w-72 px-2 py-0.5 bg-neutral-700/70"
+        placeholder="npm package name, such as react"
         defaultValue={router.query.name}
         onKeyUp={(e) => {
           if (e.key === "Enter") {
