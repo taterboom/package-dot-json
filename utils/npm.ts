@@ -1,4 +1,4 @@
-import mem from "mem"
+import $fetch from "./advancedFetch"
 
 const NPM_REGISTRY = "https://registry.npmjs.org"
 const NPM_API = "https://api.npmjs.org"
@@ -22,20 +22,19 @@ export type PackageJSON = {
   optionalDependencies: Dependencies
 }
 
-export async function fetchNpmPackageJsonImpl(
-  name: string,
-  version = "latest"
-): Promise<PackageJSON> {
-  return fetch(`${NPM_REGISTRY}/${name.replace("/", "%2F")}/${version}`).then((res) => res.json())
+export async function fetchNpmPackageJson(name: string, version = "latest"): Promise<PackageJSON> {
+  return $fetch(`${NPM_REGISTRY}/${name.replace("/", "%2F")}/${version}`)
 }
-export const fetchNpmPackageJson = mem(fetchNpmPackageJsonImpl, { maxAge: 1000 * 60 * 60 * 8 })
 
-const REGEXP_GITHUB_REPOSITORY = /git\+(.+)\.git/
+const REGEXP_GITHUB_REPOSITORY = /git\+(.+)(\.git)?/
 export function parseNpmPackageJsonRepository(repository: PackageJSON["repository"]) {
   if (repository.type === "git") {
     const res = REGEXP_GITHUB_REPOSITORY.exec(repository.url)
     if (res === null) return null
-    const repositoryUrl = res[1]
+    let repositoryUrl = res[1]
+    if (repositoryUrl.endsWith(".git")) {
+      repositoryUrl = repositoryUrl.slice(0, -4)
+    }
     const repositoryUrlObj = new URL(repositoryUrl)
     const [_, owner, name] = repositoryUrlObj.pathname.split("/")
     return {
@@ -46,11 +45,6 @@ export function parseNpmPackageJsonRepository(repository: PackageJSON["repositor
   }
 }
 
-export async function fetchNpmPackageDownloadsLastWeekImpl(name: string): Promise<number> {
-  return fetch(`${NPM_API}/downloads/point/last-week/${name}`)
-    .then((res) => res.json())
-    .then((json) => json.downloads)
+export async function fetchNpmPackageDownloadsLastWeek(name: string): Promise<number> {
+  return $fetch(`${NPM_API}/downloads/point/last-week/${name}`).then((json) => json.downloads)
 }
-export const fetchNpmPackageDownloadsLastWeek = mem(fetchNpmPackageDownloadsLastWeekImpl, {
-  maxAge: 1000 * 60 * 60 * 8,
-})

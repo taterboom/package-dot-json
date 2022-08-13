@@ -2,6 +2,6 @@ import dynamic from "next/dynamic"
 
 const App = dynamic(() => import("../components/App"), { ssr: false })
 
-const Home = () => <App />
+const PackagePage = () => <App />
 
-export default Home
+export default PackagePage

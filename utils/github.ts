@@ -1,14 +1,7 @@
-import mem from "mem"
+import $fetch from "./advancedFetch"
 
 const GITHUB_API = "https://api.github.com"
 
-export const fetchGithubStarCount = mem(
-  (owner: string, repoName: string) => {
-    return fetch(`${GITHUB_API}/repos/${owner}/${repoName}`)
-      .then((res) => res.json())
-      .then((data) => data.stargazers_count)
-  },
-  {
-    maxAge: 1000 * 60 * 60 * 8,
-  }
-)
+export const fetchGithubStarCount = (owner: string, repoName: string) => {
+  return $fetch(`${GITHUB_API}/repos/${owner}/${repoName}`).then((data) => data.stargazers_count)
+}
