@@ -38,9 +38,58 @@ const PackageDescription = (props: DependencyProps) => {
   )
 }
 
+type NpmDownloadsProps = {
+  children?: React.ReactNode
+  name: string
+}
+const NpmDownloads = (props: NpmDownloadsProps) => {
+  const { data: downloads, error: downloadsError } = useSWR(
+    ["downloads", props.name],
+    ([_, name]) => fetchNpmPackageDownloadsLastWeek(name)
+  )
+  return (
+    <a
+      className="inline-flex items-center gap-1 px-1 text-xs ring-1 rounded ring-white opacity-75"
+      href={`https://www.npmjs.com/package/${name}`}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <LogosNpmIcon /> {downloadsError ? `Error` : downloads === undefined ? "..." : downloads}
+    </a>
+  )
+}
+
+type GithubStarCountProps = {
+  children?: React.ReactNode
+  repository: {
+    url: string
+    owner: string
+    name: string
+  }
+}
+const GithubStarCount = (props: GithubStarCountProps) => {
+  const { data: starCount, error: starCountError } = useSWR(
+    ["starCount", props.repository.owner, props.repository.name],
+    ([_, owner, name]) => fetchGithubStarCount(owner, name)
+  )
+  return (
+    <a
+      className="ml-2 inline-flex items-center gap-1 px-1 text-xs ring-1 rounded ring-white opacity-75"
+      href={props.repository.url}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <RadixIconsGithubLogo />{" "}
+      {starCountError ? `Error` : starCount === undefined ? "..." : starCount}
+    </a>
+  )
+}
+
 type PackageContentProps = {
   children?: React.ReactNode
   packageJson: PackageJSON
+  npmDownloads?: boolean
+  githubStars?: boolean
 }
 
 const PackageContent = (props: PackageContentProps) => {
@@ -49,37 +98,14 @@ const PackageContent = (props: PackageContentProps) => {
     () => (packageJson ? parseNpmPackageJsonRepository(packageJson.repository) : null),
     [packageJson]
   )
-  const { data: downloads, error: downloadsError } = useSWR(
-    ["downloads", packageJson.name],
-    ([_, name]) => fetchNpmPackageDownloadsLastWeek(name)
-  )
-
-  const { data: starCount, error: starCountError } = useSWR(
-    githubRepository ? ["starCount", githubRepository.owner, githubRepository.name] : null,
-    ([_, owner, name]) => fetchGithubStarCount(owner, name)
-  )
-
   return (
     <div className="py-2">
       <h2 className=" text-4xl font-semibold">{packageJson.name}</h2>
       <h3 className=" text-lg opacity-75">{packageJson.description}</h3>
-      <a
-        className="inline-flex items-center gap-1 px-1 text-xs ring-1 rounded ring-white opacity-75"
-        href={`https://www.npmjs.com/package/${packageJson.name}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <LogosNpmIcon /> {downloadsError ? `Error` : downloads === undefined ? "..." : downloads}
-      </a>
-      <a
-        className="ml-2 inline-flex items-center gap-1 px-1 text-xs ring-1 rounded ring-white opacity-75"
-        href={githubRepository?.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <RadixIconsGithubLogo />{" "}
-        {starCountError ? `Error` : starCount === undefined ? "..." : starCount}
-      </a>
+      {props.npmDownloads ? <NpmDownloads name={packageJson.name}></NpmDownloads> : null}
+      {props.githubStars && githubRepository ? (
+        <GithubStarCount repository={githubRepository}></GithubStarCount>
+      ) : null}
       <div className="mt-2">
         <table className="w-full">
           <tbody>
@@ -90,13 +116,15 @@ const PackageContent = (props: PackageContentProps) => {
                     {dep}
                   </td>
                 </tr>
-                {Object.keys(packageJson[dep]).map((dependencyName, index) => (
+                {Object.keys(packageJson[dep]!).map((dependencyName, index) => (
                   <tr
                     key={index}
                     className="odd:bg-gray-100/5 even:bg-gray-100/10 align-top hover:bg-gray-100/20"
                   >
                     <td className="pr-2">
-                      <Link href={`/${encodeURIComponent(dependencyName)}`}>{dependencyName}</Link>
+                      <Link href={`/?name=${encodeURIComponent(dependencyName)}`}>
+                        {dependencyName}
+                      </Link>
                     </td>
                     <td>
                       <PackageDescription name={dependencyName} />
@@ -114,6 +142,8 @@ const PackageContent = (props: PackageContentProps) => {
 
 type PackageProps = {
   data: string | PackageJSON
+  npmDownloads?: boolean
+  githubStars?: boolean
 }
 const Package = (props: PackageProps) => {
   const checkPropsIsPackageName = (data: PackageProps["data"]): data is string =>
@@ -129,7 +159,13 @@ const Package = (props: PackageProps) => {
     return <div className="mt-2 opacity-70 text-sm">Error: {packageJsonError.message}</div>
   if (!packageJson) return <div className="mt-2 opacity-70 text-sm">Loading...</div>
 
-  return <PackageContent packageJson={packageJson}></PackageContent>
+  return (
+    <PackageContent
+      packageJson={packageJson}
+      npmDownloads={props.npmDownloads}
+      githubStars={props.githubStars}
+    ></PackageContent>
+  )
 }
 
 export default Package

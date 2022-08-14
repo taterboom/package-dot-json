@@ -9,29 +9,29 @@ type Dependencies = {
 
 export type PackageJSON = {
   name: string
-  version: string
-  description: string
-  homepage: string
-  repository: {
+  version?: string
+  description?: string
+  homepage?: string
+  repository?: {
     type: string // "git"
     url: string // "git+https://github.com/vercel/next.js.git"
   }
-  dependencies: Dependencies
-  devDependencies: Dependencies
-  peerDependencies: Dependencies
-  optionalDependencies: Dependencies
+  dependencies?: Dependencies
+  devDependencies?: Dependencies
+  peerDependencies?: Dependencies
+  optionalDependencies?: Dependencies
 }
 
 export async function fetchNpmPackageJson(name: string, version = "latest"): Promise<PackageJSON> {
   return $fetch(`${NPM_REGISTRY}/${name.replace("/", "%2F")}/${version}`)
 }
 
-const REGEXP_GITHUB_REPOSITORY = /git\+(.+)(\.git)?/
+const REGEXP_GITHUB_REPOSITORY = /(git\+)?(.+)(\.git)?/
 export function parseNpmPackageJsonRepository(repository: PackageJSON["repository"]) {
-  if (repository.type === "git") {
+  if (repository?.type === "git") {
     const res = REGEXP_GITHUB_REPOSITORY.exec(repository.url)
     if (res === null) return null
-    let repositoryUrl = res[1]
+    let repositoryUrl = res[2]
     if (repositoryUrl.endsWith(".git")) {
       repositoryUrl = repositoryUrl.slice(0, -4)
     }

@@ -4,6 +4,16 @@ import { fetchNpmPackageJson } from "../utils/npm"
 import Package from "./Package"
 import { useRouter } from "next/router"
 import { MaterialSymbolsSearch } from "./icons"
+import GithubPackage from "./GithubPackage"
+
+type PackageContainerProps = {
+  data: string
+}
+const PackageContainer = (props: PackageContainerProps) => {
+  const isGithubUrl = /^(https?:\/\/)?(www.)?github.com\//.test(props.data)
+  if (isGithubUrl) return <GithubPackage path={props.data}></GithubPackage>
+  return <Package data={props.data} npmDownloads githubStars></Package>
+}
 
 type MainProps = {
   children?: React.ReactNode
@@ -15,14 +25,14 @@ const Main = (props: MainProps) => {
   const onSearch = () => {
     const searchName = inputRef.current!.value.trim()
     if (!searchName) return
-    router.push("/" + searchName)
+    router.push(`/?name=${encodeURIComponent(searchName)}`)
   }
   return (
     <div className="max-w-full">
       <input
         ref={inputRef}
-        className="w-72 px-2 py-0.5 bg-neutral-700/70"
-        placeholder="npm package name, such as react"
+        className="w-72 px-2 py-0.5 bg-neutral-700/70 text-sm"
+        placeholder="npm package name or it's github url "
         defaultValue={router.query.name}
         onKeyUp={(e) => {
           if (e.key === "Enter") {
@@ -38,7 +48,9 @@ const Main = (props: MainProps) => {
       >
         <MaterialSymbolsSearch />
       </button>
-      {router.query.name ? <Package data={router.query.name as string}></Package> : null}
+      {typeof router.query.name === "string" ? (
+        <PackageContainer data={router.query.name}></PackageContainer>
+      ) : null}
     </div>
   )
 }
