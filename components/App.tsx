@@ -7,6 +7,7 @@ import PackageOnName from "./Package/PackageOnName"
 import clsx from "classnames"
 import PackageOnGithubPage from "./Package/PackageOnGithubPage"
 import { isExtension } from "../utils/env"
+import Link from "next/link"
 
 const SearchBar = () => {
   const router = useRouter()
@@ -45,16 +46,24 @@ const SearchBar = () => {
   )
 }
 
-const NavBar = () => {
+const SearchPlaceholder = () => (
+  <Link href="/?bs=1">
+    <MaterialSymbolsSearch />
+  </Link>
+)
+
+const NavBar = (props: { searchPlaceholder?: boolean; backable?: boolean }) => {
   const router = useRouter()
   return (
-    <nav className="min-w-72 flex justify-between">
-      {!!router.query.name && (
-        <button onClick={() => router.back()}>
-          <MaterialSymbolsKeyboardBackspace />
-        </button>
-      )}
-      <SearchBar />
+    <nav className="min-w-72 flex justify-between items-center">
+      <div>
+        {props.backable && (
+          <button onClick={() => router.back()}>
+            <MaterialSymbolsKeyboardBackspace />
+          </button>
+        )}
+      </div>
+      <div>{props.searchPlaceholder ? <SearchPlaceholder /> : <SearchBar />}</div>
     </nav>
   )
 }
@@ -68,18 +77,27 @@ const PackageContainer = (props: PackageContainerProps) => {
   return <PackageOnName data={props.data} npmDownloads githubStars></PackageOnName>
 }
 
-type MainProps = {
-  children?: React.ReactNode
-}
-
-const Main = (props: MainProps) => {
+const Main = () => {
   const router = useRouter()
+  const isBrowserType = router.query["bs"] === "1"
+  const hasQueryName = typeof router.query.name === "string"
+  const isExtensionGithubPageType = isExtension && !isBrowserType
+
   return (
-    <div className={clsx("max-w-full", !!router.query.name && "w-full flex-1")}>
-      <NavBar />
-      {typeof router.query.name === "string" ? (
-        <PackageContainer data={router.query.name} />
-      ) : isExtension() ? (
+    <div
+      className={clsx(
+        "max-w-full",
+        (hasQueryName || isExtension) && "w-full flex-1",
+        isExtension && "min-w-[400px]"
+      )}
+    >
+      <NavBar
+        backable={hasQueryName || isBrowserType}
+        searchPlaceholder={isExtensionGithubPageType}
+      />
+      {hasQueryName ? (
+        <PackageContainer data={router.query.name as string} />
+      ) : isExtensionGithubPageType ? (
         <PackageOnGithubPage />
       ) : null}
     </div>

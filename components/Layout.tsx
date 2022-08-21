@@ -13,7 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>2{children}</main>
+      <main className={styles.main}>{children}</main>
 
       <footer className={styles.footer}>
         <a href="https://www.github.com/xue1206" target="_blank" rel="noreferrer">

@@ -2,7 +2,7 @@ import advancedFetch, { advancedFetchText } from "../shared/advancedFetch"
 import { isExtension } from "./env"
 
 const $fetch = async (...args: Parameters<Window["fetch"]>) => {
-  if (isExtension()) {
+  if (isExtension) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(
         {
@@ -22,7 +22,7 @@ const $fetch = async (...args: Parameters<Window["fetch"]>) => {
 }
 
 export const $fetchText = async (...args: Parameters<Window["fetch"]>) => {
-  if (isExtension()) {
+  if (isExtension) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(
         {

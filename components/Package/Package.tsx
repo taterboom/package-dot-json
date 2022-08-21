@@ -8,6 +8,7 @@ import {
   parseNpmPackageJsonRepository,
 } from "../../utils/npm"
 import { LogosNpmIcon, RadixIconsGithubLogo } from "../icons"
+import clsx from "classnames"
 
 export type Dependencies = {
   [x in string]: string
@@ -110,6 +111,7 @@ type PackageProps = {
   data: PackageJSON
   npmDownloads?: boolean
   githubStars?: boolean
+  className?: string
 }
 
 const Package = (props: PackageProps) => {
@@ -119,8 +121,8 @@ const Package = (props: PackageProps) => {
     [packageJson]
   )
   return (
-    <div className="py-2">
-      <h2 className=" text-4xl font-semibold">{packageJson.name}</h2>
+    <div className={clsx("py-2", props.className)}>
+      <h2 className=" text-4xl font-semibold whitespace-nowrap">{packageJson.name}</h2>
       <h3 className=" text-lg opacity-75">{packageJson.description}</h3>
       {props.npmDownloads ? <NpmDownloads name={packageJson.name}></NpmDownloads> : null}
       {props.githubStars && githubRepository ? (
