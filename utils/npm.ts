@@ -1,4 +1,4 @@
-import $fetch from "./advancedFetch"
+import $fetch from "./appFetch"
 
 const NPM_REGISTRY = "https://registry.npmjs.org"
 const NPM_API = "https://api.npmjs.org"
@@ -7,9 +7,9 @@ type Dependencies = {
   [x in string]: string
 }
 
-export type PackageJSON = {
+type NpmPackageJSON = {
   name: string
-  version?: string
+  version: string
   description?: string
   homepage?: string
   repository?: {
@@ -22,12 +22,15 @@ export type PackageJSON = {
   optionalDependencies?: Dependencies
 }
 
-export async function fetchNpmPackageJson(name: string, version = "latest"): Promise<PackageJSON> {
+export async function fetchNpmPackageJson(
+  name: string,
+  version = "latest"
+): Promise<NpmPackageJSON> {
   return $fetch(`${NPM_REGISTRY}/${name.replace("/", "%2F")}/${version}`)
 }
 
 const REGEXP_GITHUB_REPOSITORY = /(git\+)?(.+)(\.git)?/
-export function parseNpmPackageJsonRepository(repository: PackageJSON["repository"]) {
+export function parseNpmPackageJsonRepository(repository: NpmPackageJSON["repository"]) {
   if (repository?.type === "git") {
     const res = REGEXP_GITHUB_REPOSITORY.exec(repository.url)
     if (res === null) return null

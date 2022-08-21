@@ -1,36 +1,28 @@
 import { NextApiHandler } from "next"
 import { JSDOM } from "jsdom"
+import { getPackageJson, getPackageJsonUrl, isPackageJsonUrl } from "../../shared/githubDom"
 
-async function fetchGithubDom(url: string, selector: string) {
+async function fetchGithubDom(url: string) {
   const response = await fetch(url)
   const dom = new JSDOM(await response.text())
-  return dom.window.document.querySelector(selector)
+  return dom.window.document
 }
 
 async function fetchGithubPackageJsonUrl(url: string) {
-  const packageJsonAnchorEl = await fetchGithubDom(
-    url,
-    [
-      '#files ~ div [title="package.json"]', // GitHub
-      '.files [title="package.json"]', // GitHub before "Repository refresh"
-    ].toString()
-  )
-  if (!packageJsonAnchorEl) return null
-  return (packageJsonAnchorEl as HTMLAnchorElement).href
+  const dom = await fetchGithubDom(url)
+  return getPackageJsonUrl(dom)
 }
 
 async function fetchGithubPackageJson(url: string) {
-  const packageJsonEl = await fetchGithubDom(url, ".blob-wrapper table")
-  if (!packageJsonEl || !packageJsonEl.textContent) return null
-  return JSON.parse(packageJsonEl.textContent) as Record<string, any>
+  const dom = await fetchGithubDom(url)
+  return getPackageJson(dom)
 }
 
 const api: NextApiHandler = async (req, res) => {
   const path = req.query.path
   if (typeof path !== "string") return res.status(404)
-  const isPackageJsonUrl = path.endsWith("package.json")
   let packageJsonUrl: string
-  if (!isPackageJsonUrl) {
+  if (!isPackageJsonUrl(path)) {
     const packageJsonUrlRes = await fetchGithubPackageJsonUrl(path)
     if (!packageJsonUrlRes) {
       return res.status(404)

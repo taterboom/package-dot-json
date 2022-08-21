@@ -1,14 +1,32 @@
 import Link from "next/link"
 import { Fragment, useMemo } from "react"
 import useSWR from "swr"
-import { fetchGithubStarCount } from "../utils/github"
+import { fetchGithubStarCount } from "../../utils/github"
 import {
   fetchNpmPackageDownloadsLastWeek,
   fetchNpmPackageJson,
-  PackageJSON,
   parseNpmPackageJsonRepository,
-} from "../utils/npm"
-import { LogosNpmIcon, RadixIconsGithubLogo } from "./icons"
+} from "../../utils/npm"
+import { LogosNpmIcon, RadixIconsGithubLogo } from "../icons"
+
+export type Dependencies = {
+  [x in string]: string
+}
+
+export type PackageJSON = {
+  name: string
+  version?: string
+  description?: string
+  homepage?: string
+  repository?: {
+    type: string // "git"
+    url: string // "git+https://github.com/vercel/next.js.git"
+  }
+  dependencies?: Dependencies
+  devDependencies?: Dependencies
+  peerDependencies?: Dependencies
+  optionalDependencies?: Dependencies
+}
 
 const DEPS = [
   "dependencies",
@@ -42,6 +60,7 @@ type NpmDownloadsProps = {
   children?: React.ReactNode
   name: string
 }
+
 const NpmDownloads = (props: NpmDownloadsProps) => {
   const { data: downloads, error: downloadsError } = useSWR(
     ["downloads", props.name],
@@ -67,6 +86,7 @@ type GithubStarCountProps = {
     name: string
   }
 }
+
 const GithubStarCount = (props: GithubStarCountProps) => {
   const { data: starCount, error: starCountError } = useSWR(
     ["starCount", props.repository.owner, props.repository.name],
@@ -85,15 +105,15 @@ const GithubStarCount = (props: GithubStarCountProps) => {
   )
 }
 
-type PackageContentProps = {
+type PackageProps = {
   children?: React.ReactNode
-  packageJson: PackageJSON
+  data: PackageJSON
   npmDownloads?: boolean
   githubStars?: boolean
 }
 
-const PackageContent = (props: PackageContentProps) => {
-  const { packageJson } = props
+const Package = (props: PackageProps) => {
+  const packageJson = props.data
   const githubRepository = useMemo(
     () => (packageJson ? parseNpmPackageJsonRepository(packageJson.repository) : null),
     [packageJson]
@@ -121,12 +141,12 @@ const PackageContent = (props: PackageContentProps) => {
                     key={index}
                     className="odd:bg-gray-100/5 even:bg-gray-100/10 align-top hover:bg-gray-100/20"
                   >
-                    <td className="pr-2">
+                    <td className="px-1">
                       <Link href={`/?name=${encodeURIComponent(dependencyName)}`}>
                         {dependencyName}
                       </Link>
                     </td>
-                    <td>
+                    <td className="px-1">
                       <PackageDescription name={dependencyName} />
                     </td>
                   </tr>
@@ -137,34 +157,6 @@ const PackageContent = (props: PackageContentProps) => {
         </table>
       </div>
     </div>
-  )
-}
-
-type PackageProps = {
-  data: string | PackageJSON
-  npmDownloads?: boolean
-  githubStars?: boolean
-}
-const Package = (props: PackageProps) => {
-  const checkPropsIsPackageName = (data: PackageProps["data"]): data is string =>
-    typeof props.data === "string"
-
-  const { data: packageJsonRes, error: packageJsonError } = useSWR(
-    checkPropsIsPackageName(props.data) ? ["packageJson", props.data] : null,
-    ([_, name]) => fetchNpmPackageJson(name)
-  )
-  const packageJson = checkPropsIsPackageName(props.data) ? packageJsonRes : props.data
-
-  if (packageJsonError)
-    return <div className="mt-2 opacity-70 text-sm">Error: {packageJsonError.message}</div>
-  if (!packageJson) return <div className="mt-2 opacity-70 text-sm">Loading...</div>
-
-  return (
-    <PackageContent
-      packageJson={packageJson}
-      npmDownloads={props.npmDownloads}
-      githubStars={props.githubStars}
-    ></PackageContent>
   )
 }
 
