@@ -24,7 +24,6 @@ const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
         if (installed) {
           return chrome.tabs.sendMessage(activeTabId, { contentScriptQueryPackageJson: true })
         } else {
-          console.log("inj")
           return chrome.scripting.executeScript({
             target: { tabId: activeTabId },
             files: ["content_script.js"],
@@ -40,12 +39,6 @@ const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
     }
     chrome.runtime.onMessage.addListener(onContentScriptQueryedPackageJson)
     init()
-      .then((res) => {
-        console.log("init", res)
-      })
-      .catch((err) => {
-        console.log("init err", err)
-      })
     return () => {
       chrome.runtime.onMessage.removeListener(onContentScriptQueryedPackageJson)
     }

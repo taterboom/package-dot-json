@@ -1,7 +1,11 @@
 import Link from "next/link"
-import { Fragment, useMemo } from "react"
+import { Fragment, useEffect, useMemo } from "react"
 import useSWR from "swr"
-import { fetchGithubStarCount } from "../../utils/github"
+import {
+  fetchGithubDocument,
+  fetchGithubStarsCount,
+  fetchGithubStarsCountProxy,
+} from "../../utils/github"
 import {
   fetchNpmPackageDownloadsLastWeek,
   fetchNpmPackageJson,
@@ -9,6 +13,8 @@ import {
 } from "../../utils/npm"
 import { LogosNpmIcon, RadixIconsGithubLogo } from "../icons"
 import clsx from "classnames"
+import { getStarsCount } from "../../shared/githubDom"
+import { isExtension } from "../../utils/env"
 
 export type Dependencies = {
   [x in string]: string
@@ -91,7 +97,16 @@ type GithubStarCountProps = {
 const GithubStarCount = (props: GithubStarCountProps) => {
   const { data: starCount, error: starCountError } = useSWR(
     ["starCount", props.repository.owner, props.repository.name],
-    ([_, owner, name]) => fetchGithubStarCount(owner, name)
+    ([_, owner, name]) =>
+      isExtension
+        ? fetchGithubDocument(
+            `https://github.com/${props.repository.owner}/${props.repository.name}`
+          ).then(getStarsCount)
+        : fetchGithubStarsCount(owner, name).catch(() =>
+            fetchGithubStarsCountProxy(props.repository.owner, props.repository.name).then(
+              (res) => res.count
+            )
+          )
   )
   return (
     <a
@@ -122,7 +137,7 @@ const Package = (props: PackageProps) => {
   )
   return (
     <div className={clsx("py-2", props.className)}>
-      <h2 className=" text-4xl font-semibold whitespace-nowrap">{packageJson.name}</h2>
+      <h2 className=" text-4xl font-semibold">{packageJson.name}</h2>
       <h3 className=" text-lg opacity-75">{packageJson.description}</h3>
       {props.npmDownloads ? <NpmDownloads name={packageJson.name}></NpmDownloads> : null}
       {props.githubStars && githubRepository ? (

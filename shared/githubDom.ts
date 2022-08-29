@@ -13,3 +13,10 @@ export function getPackageJson(dom: Document) {
   if (!packageJsonEl || !packageJsonEl.textContent) return null
   return JSON.parse(packageJsonEl.textContent) as Record<string, any>
 }
+
+export function getStarsCount(dom: Document) {
+  const starsCountEl = dom.querySelector("#repo-stars-counter-star")
+  if (!starsCountEl) return null
+  const labelContainsNumber = starsCountEl.getAttribute("aria-label") || ""
+  return parseInt(labelContainsNumber) || 0
+}

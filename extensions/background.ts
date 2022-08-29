@@ -6,15 +6,11 @@
 import mem from "mem"
 import advancedFetch, { advancedFetchText } from "../shared/advancedFetch"
 
-// send to popup
-console.log("-b")
-
 chrome.runtime.onInstalled.addListener((message) => {
-  console.log("oi", message)
+  // console.log("oi", message)
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("b f", message)
   if (message.backgroundFetch) {
     // @ts-ignore
     bgFetch(...message.backgroundFetch)

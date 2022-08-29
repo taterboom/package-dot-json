@@ -1,7 +1,10 @@
-import { isPackageJsonUrl, getPackageJsonUrl, getPackageJson } from "../shared/githubDom"
+import {
+  isPackageJsonUrl,
+  getPackageJsonUrl,
+  getPackageJson,
+  getStarsCount,
+} from "../shared/githubDom"
 import { fetchGithubDocument } from "../utils/github"
-
-console.log("cs inject")
 
 async function queryPackageJson() {
   console.log(isPackageJsonUrl(location.href))
@@ -15,30 +18,27 @@ async function queryPackageJson() {
   }
 }
 
-async function queryPackageJsonAndBroacast() {
+async function queryPackageJsonAndBroadcast() {
   try {
     const packageJson = await queryPackageJson()
-    console.log("3", packageJson)
-    chrome.runtime.sendMessage({ contentScriptQueryedPackageJson: packageJson })
+    const starsCount = getStarsCount(document)
+    chrome.runtime.sendMessage({ contentScriptQueryedPackageJson: packageJson, starsCount })
   } catch (err) {
-    console.log("4", err)
+    // console.log("4", err)
   }
 }
 
 if (document.readyState === "complete") {
-  console.log(1)
-  queryPackageJsonAndBroacast()
+  queryPackageJsonAndBroadcast()
 } else {
   document.addEventListener("DOMContentLoaded", () => {
-    console.log(2)
-    queryPackageJsonAndBroacast()
+    queryPackageJsonAndBroadcast()
   })
 }
 
 chrome.runtime.onMessage.addListener((message) => {
-  console.log(5, message)
   if (message.contentScriptQueryPackageJson) {
-    queryPackageJsonAndBroacast()
+    queryPackageJsonAndBroadcast()
   }
   return true
 })
