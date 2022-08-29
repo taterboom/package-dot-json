@@ -70,7 +70,7 @@ const NpmDownloads = (props: NpmDownloadsProps) => {
   return (
     <a
       className="inline-flex items-center gap-1 px-1 text-xs ring-1 rounded ring-white opacity-75"
-      href={`https://www.npmjs.com/package/${name}`}
+      href={`https://www.npmjs.com/package/${props.name}`}
       target="_blank"
       rel="noreferrer"
     >
