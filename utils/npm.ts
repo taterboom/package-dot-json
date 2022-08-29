@@ -29,14 +29,19 @@ export async function fetchNpmPackageJson(
   return $fetch(`${NPM_REGISTRY}/${name.replace("/", "%2F")}/${version}`)
 }
 
-const REGEXP_GITHUB_REPOSITORY = /(git\+)?(.+)(\.git)?/
+const REGEXP_GITHUB_REPOSITORY = /(git(\+|:))?(.+)(\.git)?/
 export function parseNpmPackageJsonRepository(repository: NpmPackageJSON["repository"]) {
   if (repository?.type === "git") {
     const res = REGEXP_GITHUB_REPOSITORY.exec(repository.url)
     if (res === null) return null
-    let repositoryUrl = res[2]
+    let repositoryUrl = res[3]
+    // remove .git suffix
     if (repositoryUrl.endsWith(".git")) {
       repositoryUrl = repositoryUrl.slice(0, -4)
+    }
+    // handle some url like "github.com/isaacs/node-lru-cache.git"
+    if (repositoryUrl.startsWith("//")) {
+      repositoryUrl = "https:" + repositoryUrl
     }
     const repositoryUrlObj = new URL(repositoryUrl)
     const [_, owner, name] = repositoryUrlObj.pathname.split("/")
