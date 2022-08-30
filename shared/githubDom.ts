@@ -5,7 +5,8 @@ export function getPackageJsonUrl(dom: Document) {
     ['#files ~ div [title="package.json"]', '.files [title="package.json"]'].toString()
   )
   if (!packageJsonAnchorEl) return null
-  return (packageJsonAnchorEl as HTMLAnchorElement).href
+  const href = (packageJsonAnchorEl as HTMLAnchorElement).href
+  return href.startsWith("/") ? `https://github.com${href}` : href
 }
 
 export function getPackageJson(dom: Document) {
