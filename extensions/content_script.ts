@@ -7,7 +7,6 @@ import {
 import { fetchGithubDocument } from "../utils/github"
 
 async function queryPackageJson() {
-  console.log(isPackageJsonUrl(location.href))
   if (!isPackageJsonUrl(location.href)) {
     const packageJsonUrl = getPackageJsonUrl(document)
     if (!packageJsonUrl) throw new Error("no package.json url")

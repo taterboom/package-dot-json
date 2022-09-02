@@ -2,12 +2,21 @@ import Head from "next/head"
 import styles from "../styles/Home.module.css"
 import React from "react"
 import Image from "next/image"
+import { isExtension } from "../utils/env"
 
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <a href="https://www.github.com/xue1206/package-dot-json" target="_blank" rel="noreferrer">
-        <Image src="/logo.png" alt="logo" width={66} height={24} />
+      <a
+        href={
+          isExtension
+            ? "https://package.json.taterbomb.top"
+            : "https://www.github.com/xue1206/package-dot-json"
+        }
+        target="_blank"
+        rel="noreferrer"
+      >
+        <Image src={isExtension ? "./logo.png" : "/logo.png"} alt="logo" width={66} height={24} />
       </a>
     </footer>
   )

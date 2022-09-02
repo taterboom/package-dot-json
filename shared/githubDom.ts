@@ -21,3 +21,7 @@ export function getStarsCount(dom: Document) {
   const labelContainsNumber = starsCountEl.getAttribute("aria-label") || ""
   return parseInt(labelContainsNumber) || 0
 }
+
+export function isGithubRepoPath(url: string) {
+  return /.*github\.com\/[^/]+\/[^/]+/.test(url)
+}

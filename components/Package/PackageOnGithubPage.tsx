@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import useSWR from "swr"
+import { isGithubRepoPath } from "../../shared/githubDom"
 import Package from "./Package"
 
 type PackageOnGithubPageProps = {
@@ -8,10 +8,12 @@ type PackageOnGithubPageProps = {
 
 const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
   const [packageJson, setPackageJson] = useState(null)
+  const [isInGithubRepoPage, setIsInGithubRepoPage] = useState(true)
   useEffect(() => {
     const init = async () => {
       const res = await chrome.tabs.query({ active: true, currentWindow: true })
       const activeTabId = res[0]?.id
+      setIsInGithubRepoPage(res[0]?.url ? isGithubRepoPath(res[0].url) : false)
       if (activeTabId) {
         const [{ result: installed }] = await chrome.scripting.executeScript({
           target: { tabId: activeTabId },
@@ -20,7 +22,6 @@ const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
             return window.__pdj_content_script_installed__
           },
         })
-        console.log(installed)
         if (installed) {
           return chrome.tabs.sendMessage(activeTabId, { contentScriptQueryPackageJson: true })
         } else {
@@ -32,7 +33,6 @@ const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
       }
     }
     const onContentScriptQueryedPackageJson = (message: any) => {
-      console.log("onContentScriptQueryedPackageJson")
       if (message.contentScriptQueryedPackageJson) {
         setPackageJson(message.contentScriptQueryedPackageJson)
       }
@@ -44,6 +44,8 @@ const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
     }
   }, [])
 
+  if (!isInGithubRepoPage)
+    return <div>Cannot find package.json, you can click the 🔍 to search for an npm package.</div>
   if (!packageJson) return <div>Loading...</div>
 
   return <Package data={packageJson}></Package>
