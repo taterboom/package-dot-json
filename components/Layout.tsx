@@ -1,7 +1,17 @@
 import Head from "next/head"
 import styles from "../styles/Home.module.css"
-import React, { SVGProps } from "react"
-import { IconMdiGithub } from "./icons"
+import React from "react"
+import Image from "next/image"
+
+const Footer = () => {
+  return (
+    <footer className={styles.footer}>
+      <a href="https://www.github.com/xue1206/package-dot-json" target="_blank" rel="noreferrer">
+        <Image src="/logo.png" alt="logo" width={66} height={24} />
+      </a>
+    </footer>
+  )
+}
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -15,11 +25,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
       <main className={styles.main}>{children}</main>
 
-      <footer className={styles.footer}>
-        <a href="https://www.github.com/xue1206" target="_blank" rel="noreferrer">
-          <IconMdiGithub />
-        </a>
-      </footer>
+      <Footer></Footer>
     </div>
   )
 }

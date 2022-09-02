@@ -19,14 +19,15 @@
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
+  gap: 4px;
 }
 
-.footer a {
+/* .footer a {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-grow: 1;
-}
+} */
 
 .title a {
   color: #0070f3;
