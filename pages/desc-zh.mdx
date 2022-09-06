@@ -1,0 +1,32 @@
+# 当我们在搜索一个 npm 包时，我们主要关注什么？
+
+> [English Version](/desc)
+
+## 为了阅读一个包的使用手册
+
+目的明确，就是为了搜索用法，通常对这个包有点了解。 比如搜索`lodash`的用法，除了 google，就是在 npmjs.com 搜索，或者在 github.com 上搜索，主要就是看 Readme。
+
+## 为了查看一个包的基本信息
+
+当我们基对一个包完全不熟悉时，我们通常会首先关注一下几点：
+
+- **介绍** 了解这个包解决了什么问题，如果不了解这个包，通常这个信息是比较关注的
+- **作者** 这个包的作者是不是自己熟悉的
+- **npm 下载量/github star 数** 这个包是不是比较热门，通过这个数据判断是否可靠
+- **依赖** 这个包基本的技术方案，用到了哪些其他依赖，可以基本了解其基本技术方案
+- …
+
+比如在查阅`next`这个包时，假如我们已经知道它是一个基于 React 的 Framework， 想了解它的仓库搭建方案，是通过基于 pnpm 的 Monorepo 方案还是其他方案？ web 服务是不是使用流行的 express 还是使用其他依赖？ 有没有用到一些没有自己见过的依赖，如果有，想快速了解该依赖包的基本信息，比如 介绍、下载量等等。
+
+## PDJ 使用
+
+- 访问 [Website](https://package.json.taterbomb.top), 在搜索框框中输入 npm package name 或者 github url。
+- 安装 [Chrome 扩展插件](https://chrome.google.com/webstore/detail/pdj/edgpjjbejcjkgnlnehoballnhokglenj), 在浏览 github 时，点击 Chrome 导航栏的“P”图标，可以查看当前页面的 package.json, 或者在弹出框中搜索。
+
+## 技术
+
+[如何获取一个 npm 包的信息](https://www.taterbomb.top/posts/how-to-get-a-npm-package-information-zh)
+
+export default ({ children }) => (
+  <article className="prose lg:prose-xl prose-invert">{children}</article>
+)

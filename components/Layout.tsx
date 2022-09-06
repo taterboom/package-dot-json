@@ -3,21 +3,47 @@ import styles from "../styles/Home.module.css"
 import React from "react"
 import Image from "next/image"
 import { isExtension } from "../utils/env"
+import { MdiEmailArrowRightOutline, PhTwitterLogo, TablerBrandGithub } from "./icons"
 
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <a
-        href={
-          isExtension
-            ? "https://package.json.taterbomb.top"
-            : "https://www.github.com/xue1206/package-dot-json"
-        }
-        target="_blank"
-        rel="noreferrer"
-      >
-        <Image src={isExtension ? "./logo.png" : "/logo.png"} alt="logo" width={66} height={24} />
-      </a>
+      <div className="inline-flex justify-between items-center mx-auto gap-12">
+        <div>
+          <a
+            href="https://package.json.taterbomb.top"
+            {...(isExtension
+              ? {
+                  target: "_blank",
+                  rel: "noreferrer",
+                }
+              : {})}
+          >
+            <Image
+              src={isExtension ? "./logo.png" : "/logo.png"}
+              alt="logo"
+              width={66}
+              height={24}
+            />
+          </a>
+        </div>
+        {!isExtension && (
+          <div className="flex items-center gap-2 opacity-70">
+            <a href="/desc" className=" text-sm underline">
+              doc
+            </a>
+            <a href="https://github.com/xue1206/package-dot-json" target="_blank" rel="noreferrer">
+              <TablerBrandGithub />
+            </a>
+            <a href="https://twitter.com/didan64037534" target="_blank" rel="noreferrer">
+              <PhTwitterLogo />
+            </a>
+            <a href="mailto:xuebagod@gmail.com" target="_blank" rel="noreferrer">
+              <MdiEmailArrowRightOutline />
+            </a>
+          </div>
+        )}
+      </div>
     </footer>
   )
 }

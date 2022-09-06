@@ -1,0 +1,32 @@
+# When we search for an npm package, what is our main concern?
+
+> [Chinese Version](/desc-zh)
+
+## For reading the manual of an npm package
+
+The purpose is clear, it is to search for usage. For example, to search for usage of lodash, besides google, you can search on [npmjs.com](http://npmjs.com/) or on [github.com](http://github.com/), and read the manual in Readme.
+
+## For reading the basic infomation about an npm package
+
+When we unfamiliar with a package or a github repo, we usually focus first on the following points.
+
+- **Introduction.** Understand what problem this package solves. if you don't know the package, usually this information is more concerned.
+- **Author.** whether the author of this package is familiar to you.
+- **Npm downloads / Github stars count.** This package is popular or not.
+- **Dependencies.** The basic technical solution of this package, what other dependencies are used, you can basically understand its basic technical solution.
+- ...
+
+For example, if we know that `next` is a React-based framework, we want to know if the repository is built through the pnpm-based Monorepo solution or some other solution? Is the web server using the popular express or other dependencies? Any dependencies that you haven't seen before? and if so, you can quickly read the basic information about the dependency, such as its introduction, download count, etc.
+
+## How to use PDJ to read an npm package
+
+- visit the [Website](https://package.json.taterbomb.top), search npm package name or github url by typing in the input box.
+- install the [Chrome Extension](https://chrome.google.com/webstore/detail/pdj/edgpjjbejcjkgnlnehoballnhokglenj), tap the "P" icon on chrome navbar when visiting github pages, or do searching just like using the website.
+
+## Tech
+
+[How to get the information about an npm package](https://www.taterbomb.top/posts/how-to-get-a-npm-package-information)
+
+export default ({ children }) => (
+  <article className="prose lg:prose-xl prose-invert">{children}</article>
+)
