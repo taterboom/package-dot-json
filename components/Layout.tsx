@@ -3,7 +3,12 @@ import styles from "../styles/Home.module.css"
 import React from "react"
 import Image from "next/image"
 import { isExtension } from "../utils/env"
-import { MdiEmailArrowRightOutline, PhTwitterLogo, TablerBrandGithub } from "./icons"
+import {
+  MdiEmailArrowRightOutline,
+  PhGoogleChromeLogo,
+  PhTwitterLogo,
+  TablerBrandGithub,
+} from "./icons"
 
 const Footer = () => {
   return (
@@ -31,6 +36,13 @@ const Footer = () => {
           <div className="flex items-center gap-2 opacity-70">
             <a href="/desc" className=" text-sm underline">
               doc
+            </a>
+            <a
+              href="https://chrome.google.com/webstore/detail/pdj/edgpjjbejcjkgnlnehoballnhokglenj"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <PhGoogleChromeLogo />
             </a>
             <a href="https://github.com/xue1206/package-dot-json" target="_blank" rel="noreferrer">
               <TablerBrandGithub />

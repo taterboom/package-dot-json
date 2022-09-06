@@ -116,3 +116,14 @@ export function MdiEmailArrowRightOutline(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+export function PhGoogleChromeLogo(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="1em" height="1em" viewBox="0 0 256 256" {...props}>
+      <path
+        fill="currentColor"
+        d="M128 24a104 104 0 1 0 104 104A104.2 104.2 0 0 0 128 24Zm0 16a88.1 88.1 0 0 1 76.2 44H128a44 44 0 0 0-41.2 28.6L62.1 69.8A87.6 87.6 0 0 1 128 40Zm28 88a28 28 0 1 1-28-28a28.1 28.1 0 0 1 28 28Zm-116 0a87.7 87.7 0 0 1 11.8-44l38.1 66l.2.3a44 44 0 0 0 45.2 21.1l-24.8 42.9A88.3 88.3 0 0 1 40 128Zm88 88l38.1-66c.1-.1.1-.3.2-.4a43.8 43.8 0 0 0-4.4-49.6h49.5a86.5 86.5 0 0 1 4.6 28a88.1 88.1 0 0 1-88 88Z"
+      ></path>
+    </svg>
+  )
+}
