@@ -44,7 +44,11 @@ const Footer = () => {
             >
               <PhGoogleChromeLogo />
             </a>
-            <a href="https://github.com/xue1206/package-dot-json" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/taterbomb/package-dot-json"
+              target="_blank"
+              rel="noreferrer"
+            >
               <TablerBrandGithub />
             </a>
             <a href="https://twitter.com/didan64037534" target="_blank" rel="noreferrer">
