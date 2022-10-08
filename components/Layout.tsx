@@ -16,7 +16,7 @@ const Footer = () => {
       <div className="inline-flex justify-between items-center mx-auto gap-12">
         <div>
           <a
-            href="https://package.json.taterbomb.top"
+            href="https://pdj.taterboom.com"
             {...(isExtension
               ? {
                   target: "_blank",
@@ -45,7 +45,7 @@ const Footer = () => {
               <PhGoogleChromeLogo />
             </a>
             <a
-              href="https://github.com/taterbomb/package-dot-json"
+              href="https://github.com/taterboom/package-dot-json"
               target="_blank"
               rel="noreferrer"
             >
