@@ -8,16 +8,35 @@ import advancedFetch, { advancedFetchText } from "../shared/advancedFetch"
 
 let currentActiveInfo: chrome.tabs.TabActiveInfo | null = null
 
+// TODO
+// cache by tabid and url and then remove tabid when onRemoved
+// tabid: {[url]: message}
 const store: Record<number, { contentScriptQueryedPackageJson: any; starsCount: number }> = {}
 
+// @ts-ignore
+globalThis.store = store
+// @ts-ignore
+globalThis.currentActiveInfo = currentActiveInfo
+
+function removeBadge() {
+  chrome.action.setBadgeText({ text: "" })
+}
+
 function setBadge(tabId: number) {
+  if (currentActiveInfo?.tabId !== tabId) return
   const cached = store[tabId]
   if (cached) {
-    chrome.action.setBadgeBackgroundColor({ color: "#F00" }, () => {
-      chrome.action.setBadgeText({ text: cached.contentScriptQueryedPackageJson.name })
+    chrome.action.setBadgeBackgroundColor({ color: "#C00" }, () => {
+      chrome.action.setBadgeText({ text: "1" })
     })
   } else {
-    chrome.action.setBadgeText({ text: "" })
+    removeBadge()
+  }
+}
+
+function removeStoreTab(id: number) {
+  if (store[id]) {
+    delete store[id]
   }
 }
 
@@ -25,10 +44,13 @@ chrome.runtime.onInstalled.addListener((message) => {
   // console.log("oi", message)
 })
 
+// remove store and badge when loading new page
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   console.log("ou", tabId, changeInfo, tab)
-  if (currentActiveInfo?.tabId === tabId && changeInfo.status === "complete") {
-    setBadge(tabId)
+  // the first loading event
+  if (changeInfo.status === "loading" && changeInfo.url) {
+    removeStoreTab(tabId)
+    removeBadge()
   }
 })
 
@@ -42,11 +64,11 @@ chrome.tabs.onActivated.addListener((activeInfo, ...args) => {
   setBadge(activeInfo.tabId)
 })
 
+// remove store and badge when remove a tab
 chrome.tabs.onRemoved.addListener((tabId) => {
   console.log("or", tabId)
-  if (store[tabId]) {
-    delete store[tabId]
-  }
+  removeStoreTab(tabId)
+  removeBadge()
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -73,6 +95,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       })
     return true
   } else if (message.contentScriptQueryedPackageJson) {
+    // store cache and show badge when receive content_script contentScriptQueryedPackageJson event
     if (sender.tab?.id) {
       store[sender.tab.id] = message
       setBadge(sender.tab.id)
