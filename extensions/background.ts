@@ -6,25 +6,41 @@
 import mem from "mem"
 import advancedFetch, { advancedFetchText } from "../shared/advancedFetch"
 
+/**
+ * 1. activate a tab => setBadge
+ * 2. remove a tab => removeStore setBadge
+ * 3. udpate a tab => setBadge
+ * 4. receive pdj query => addStore setBadge
+ */
+
 let currentActiveInfo: chrome.tabs.TabActiveInfo | null = null
 
-// TODO
 // cache by tabid and url and then remove tabid when onRemoved
-// tabid: {[url]: message}
-const store: Record<number, { contentScriptQueryedPackageJson: any; starsCount: number }> = {}
+const store: Record<
+  number,
+  Record<string, { contentScriptQueryedPackageJson: any; starsCount: number }>
+> = {}
 
-// @ts-ignore
-globalThis.store = store
-// @ts-ignore
-globalThis.currentActiveInfo = currentActiveInfo
+// // @ts-ignore
+// globalThis.store = store
+// // @ts-ignore
+// globalThis.currentActiveInfo = currentActiveInfo
 
 function removeBadge() {
   chrome.action.setBadgeText({ text: "" })
 }
 
-function setBadge(tabId: number) {
+async function setBadge(tabId: number, url?: string) {
   if (currentActiveInfo?.tabId !== tabId) return
-  const cached = store[tabId]
+  let cached
+  if (url) {
+    cached = store?.[tabId]?.[url]
+  } else {
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    if (!(activeTab && activeTab.id && activeTab.url)) return
+    if (tabId !== activeTab.id) return
+    cached = store?.[activeTab.id]?.[activeTab.url]
+  }
   if (cached) {
     chrome.action.setBadgeBackgroundColor({ color: "#C00" }, () => {
       chrome.action.setBadgeText({ text: "1" })
@@ -46,33 +62,36 @@ chrome.runtime.onInstalled.addListener((message) => {
 
 // remove store and badge when loading new page
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log("ou", tabId, changeInfo, tab)
-  // the first loading event
-  if (changeInfo.status === "loading" && changeInfo.url) {
-    removeStoreTab(tabId)
-    removeBadge()
+  // console.log("ou", tabId, changeInfo, tab)
+  if (tab.id && tab.url) {
+    setBadge(tab.id, tab.url)
   }
 })
 
-chrome.tabs.onCreated.addListener((tab, ...args) => {
-  console.log("oc", tab, args)
-})
-
 chrome.tabs.onActivated.addListener((activeInfo, ...args) => {
-  console.log("oa", activeInfo, args)
+  // console.log("oa", activeInfo, args)
   currentActiveInfo = activeInfo
   setBadge(activeInfo.tabId)
 })
 
 // remove store and badge when remove a tab
 chrome.tabs.onRemoved.addListener((tabId) => {
-  console.log("or", tabId)
+  // console.log("or", tabId)
   removeStoreTab(tabId)
   removeBadge()
 })
 
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  chrome.tabs.sendMessage(details.tabId, {
+    historyStateUpdatedInfo: {
+      tabId: details.tabId,
+      url: details.url,
+    },
+  })
+})
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("[om]", message)
+  // console.log("[om]", message)
 
   if (message.backgroundFetch) {
     // @ts-ignore
@@ -96,8 +115,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true
   } else if (message.contentScriptQueryedPackageJson) {
     // store cache and show badge when receive content_script contentScriptQueryedPackageJson event
-    if (sender.tab?.id) {
-      store[sender.tab.id] = message
+    if (sender.tab?.id && sender.tab.url) {
+      store[sender.tab.id] = {
+        ...store[sender.tab.id],
+        [sender.tab.url]: message,
+      }
       setBadge(sender.tab.id)
     }
   }

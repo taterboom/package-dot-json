@@ -6,15 +6,16 @@ import {
 } from "../shared/githubDom"
 import { fetchGithubDocument } from "../utils/github"
 
-console.log("cs!")
-
 // @ts-ignore
 window.__pdj_content_script_installed__ = true
 
-let cached: {
-  contentScriptQueryedPackageJson: any
-  starsCount: number | null
-} | null = null
+let store: Record<
+  string,
+  {
+    contentScriptQueryedPackageJson: any
+    starsCount: number | null
+  }
+> = {}
 
 async function queryPackageJson() {
   if (!isPackageJsonUrl(location.href)) {
@@ -27,38 +28,40 @@ async function queryPackageJson() {
   }
 }
 
-let _finished = false
 async function githubPjaxFinished() {
-  console.log("1", _finished)
-  if (_finished) return
   // wait github pjax
   const ajaxFiles = document.querySelector('#files ~ include-fragment[src*="/file-list/"]')
-  console.log("2", ajaxFiles)
+  // console.log("2", ajaxFiles)
   if (ajaxFiles?.parentNode) {
     await new Promise((resolve) => {
       new MutationObserver(resolve).observe(ajaxFiles.parentNode!, {
         childList: true,
       })
     })
-    _finished = true
-    console.log("3")
+    // console.log("3")
   }
 }
 
 async function queryPackageJsonAndBroadcast() {
-  await githubPjaxFinished()
+  const key = window.location.pathname
+  const cached = store[key]
   if (cached) {
     chrome.runtime.sendMessage(cached)
     return
   }
+  await githubPjaxFinished()
   try {
     const packageJson = await queryPackageJson()
     const starsCount = getStarsCount(document)
-    cached = { contentScriptQueryedPackageJson: packageJson, starsCount }
-    console.log("send")
-    chrome.runtime.sendMessage(cached)
+    const result = { contentScriptQueryedPackageJson: packageJson, starsCount }
+    store = {
+      ...store,
+      [key]: result,
+    }
+    // console.log("send")
+    chrome.runtime.sendMessage(result)
   } catch (err) {
-    console.log("4", err)
+    // console.log("4", err)
   }
 }
 
@@ -73,6 +76,9 @@ if (document.readyState === "loading") {
 chrome.runtime.onMessage.addListener((message) => {
   if (message.contentScriptQueryPackageJson) {
     queryPackageJsonAndBroadcast()
+  } else if (message.historyStateUpdatedInfo) {
+    if (message.historyStateUpdatedInfo.url === window.location.href) {
+      queryPackageJsonAndBroadcast()
+    }
   }
-  return true
 })

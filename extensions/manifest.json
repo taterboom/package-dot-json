@@ -15,7 +15,7 @@
     "default_title": "Click to overview package.json",
     "default_popup": "out/index.html"
   },
-  "permissions": ["activeTab", "scripting", "tabs"],
+  "permissions": ["activeTab", "scripting", "tabs", "webNavigation"],
   "host_permissions": ["https://*/*"],
   "content_scripts": [
     {
