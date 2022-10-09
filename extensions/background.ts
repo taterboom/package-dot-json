@@ -82,6 +82,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 })
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  console.log("ohsu", details)
   chrome.tabs.sendMessage(details.tabId, {
     historyStateUpdatedInfo: {
       tabId: details.tabId,
@@ -91,7 +92,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // console.log("[om]", message)
+  console.log("[om]", message)
 
   if (message.backgroundFetch) {
     // @ts-ignore

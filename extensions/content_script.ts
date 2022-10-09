@@ -9,6 +9,7 @@ import { fetchGithubDocument } from "../utils/github"
 // @ts-ignore
 window.__pdj_content_script_installed__ = true
 
+// TODO loading check
 let store: Record<
   string,
   {
@@ -18,27 +19,31 @@ let store: Record<
 > = {}
 
 async function queryPackageJson() {
-  if (!isPackageJsonUrl(location.href)) {
+  if (isPackageJsonUrl(location.href)) {
+    // TODO
+    // await elementready
+    return getPackageJson(document)
+  } else {
+    // TODO
+    // await elemetready
     const packageJsonUrl = getPackageJsonUrl(document)
     if (!packageJsonUrl) throw new Error("no package.json url")
     const dom = await fetchGithubDocument(packageJsonUrl)
     return getPackageJson(dom)
-  } else {
-    return getPackageJson(document)
   }
 }
 
 async function githubPjaxFinished() {
   // wait github pjax
   const ajaxFiles = document.querySelector('#files ~ include-fragment[src*="/file-list/"]')
-  // console.log("2", ajaxFiles)
+  console.log("2", ajaxFiles)
   if (ajaxFiles?.parentNode) {
     await new Promise((resolve) => {
       new MutationObserver(resolve).observe(ajaxFiles.parentNode!, {
         childList: true,
       })
     })
-    // console.log("3")
+    console.log("3")
   }
 }
 
@@ -74,6 +79,8 @@ if (document.readyState === "loading") {
 }
 
 chrome.runtime.onMessage.addListener((message) => {
+  console.log("[om]", message)
+
   if (message.contentScriptQueryPackageJson) {
     queryPackageJsonAndBroadcast()
   } else if (message.historyStateUpdatedInfo) {
