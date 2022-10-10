@@ -4,5 +4,5 @@
 
 ## Usage
 
-- [Website](https://package.json.taterbomb.top)
+- [Website](https://pdj.taterboom.com)
 - [Chrome Extension](https://chrome.google.com/webstore/detail/pdj/edgpjjbejcjkgnlnehoballnhokglenj)
