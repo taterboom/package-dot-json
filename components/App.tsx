@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { SWRConfig } from "swr"
 import { useRouter } from "next/router"
 import { MaterialSymbolsKeyboardBackspace, MaterialSymbolsSearch } from "./icons"
@@ -17,6 +17,9 @@ const SearchBar = () => {
     if (!searchName) return
     router.push(`/?name=${encodeURIComponent(searchName)}`)
   }
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
   return (
     <div className="">
       <input
