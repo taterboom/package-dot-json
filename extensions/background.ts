@@ -7,10 +7,10 @@ import mem from "mem"
 import advancedFetch, { advancedFetchText } from "../shared/advancedFetch"
 
 /**
- * 1. activate a tab => setBadge
- * 2. remove a tab => removeStore setBadge
- * 3. udpate a tab => setBadge
- * 4. receive pdj query => addStore setBadge
+ * 1. activate a tab => resetIcon
+ * 2. remove a tab => removeStore resetIcon
+ * 3. udpate a tab => resetIcon
+ * 4. receive pdj query => addStore resetIcon
  */
 
 let currentActiveInfo: chrome.tabs.TabActiveInfo | null = null
@@ -26,11 +26,22 @@ const store: Record<
 // // @ts-ignore
 // globalThis.currentActiveInfo = currentActiveInfo
 
-function removeBadge() {
-  chrome.action.setBadgeText({ text: "" })
+function removeIcon(tabId: number) {
+  setIcon(tabId, "inactive")
 }
 
-async function setBadge(tabId: number, url?: string) {
+function setIcon(tabId: number, type: "active" | "inactive") {
+  chrome.action.setIcon({
+    tabId,
+    path: {
+      "16": chrome.runtime.getURL(`images/${type}-16.png`),
+      "48": chrome.runtime.getURL(`images/${type}-48.png`),
+      "128": chrome.runtime.getURL(`images/${type}-128.png`),
+    },
+  })
+}
+
+async function resetIcon(tabId: number, url?: string) {
   if (currentActiveInfo?.tabId !== tabId) return
   let cached
   if (url) {
@@ -42,11 +53,9 @@ async function setBadge(tabId: number, url?: string) {
     cached = store?.[activeTab.id]?.[activeTab.url]
   }
   if (cached) {
-    chrome.action.setBadgeBackgroundColor({ color: "#C00" }, () => {
-      chrome.action.setBadgeText({ text: "1" })
-    })
+    setIcon(tabId, "active")
   } else {
-    removeBadge()
+    removeIcon(tabId)
   }
 }
 
@@ -64,21 +73,21 @@ chrome.runtime.onInstalled.addListener((message) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // console.log("ou", tabId, changeInfo, tab)
   if (tab.id && tab.url) {
-    setBadge(tab.id, tab.url)
+    resetIcon(tab.id, tab.url)
   }
 })
 
 chrome.tabs.onActivated.addListener((activeInfo, ...args) => {
   // console.log("oa", activeInfo, args)
   currentActiveInfo = activeInfo
-  setBadge(activeInfo.tabId)
+  resetIcon(activeInfo.tabId)
 })
 
 // remove store and badge when remove a tab
 chrome.tabs.onRemoved.addListener((tabId) => {
   // console.log("or", tabId)
   removeStoreTab(tabId)
-  removeBadge()
+  removeIcon(tabId)
 })
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
@@ -121,7 +130,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         ...store[sender.tab.id],
         [sender.tab.url]: message,
       }
-      setBadge(sender.tab.id)
+      resetIcon(sender.tab.id)
     }
   }
 })

@@ -51,7 +51,7 @@ const SearchBar = () => {
 
 const SearchPlaceholder = () => (
   <Link href="/?bs=1">
-    <MaterialSymbolsSearch />
+    <MaterialSymbolsSearch className="cursor-pointer" />
   </Link>
 )
 
