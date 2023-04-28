@@ -12,7 +12,8 @@ export function getPackageJsonUrl(dom: Document) {
   return href.startsWith("/") ? `https://github.com${href}` : href
 }
 
-export const PACKAGEJSON_SELECTOR = ".blob-wrapper table"
+export const NEW_VERSION_BLOB_SELECTOR = "#read-only-cursor-text-area"
+export const PACKAGEJSON_SELECTOR = `.blob-wrapper table, ${NEW_VERSION_BLOB_SELECTOR}`
 
 export function getPackageJson(dom: Document) {
   const packageJsonEl = dom.querySelector(PACKAGEJSON_SELECTOR)

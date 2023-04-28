@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:ext": "rm -rf extensions_dist && NEXT_PUBLIC_EXTENSION=chrome next build && next export && pnpm run compile:ext && pnpm run cp:ext",
-    "compile:ext": "npx esbuild content_script=extensions/content_script.ts background=extensions/background.ts --bundle --outdir=extensions_dist --target=esnext --define:process.env.NEXT_PUBLIC_EXTENSION=chrome",
+    "build:ext": "rm -rf extensions_dist && NEXT_PUBLIC_EXTENSION=chrome next build && NEXT_PUBLIC_EXTENSION=chrome next export && pnpm run compile:ext && pnpm run cp:ext",
+    "compile:ext": "npx esbuild content_script=extensions/content_script.ts background=extensions/background.ts --bundle --outdir=extensions_dist --target=esnext --define:process.env.NEXT_PUBLIC_EXTENSION=\\\"chrome\\\"",
     "cp:ext": "cp extensions/manifest.json extensions_dist/ & cp -R out extensions_dist/ & cp -R extensions/images extensions_dist/",
     "start": "next start",
     "lint": "next lint"

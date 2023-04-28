@@ -101,7 +101,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // console.log("[om]", message)
+  console.log("[om]", message)
 
   if (message.backgroundFetch) {
     // @ts-ignore

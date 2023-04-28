@@ -96,6 +96,7 @@ async function queryPackageJson() {
   } else {
     await elementReady(PACKAGEJSON_URL_SELECTOR)
     const packageJsonUrl = getPackageJsonUrl(document)
+    // console.log("pu", packageJsonUrl)
     if (!packageJsonUrl) throw new Error("no package.json url")
     const dom = await fetchGithubDocument(packageJsonUrl)
     return getPackageJson(dom)
