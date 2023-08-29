@@ -91,7 +91,7 @@ const Main = () => {
       className={clsx(
         "max-w-full",
         (hasQueryName || isExtension) && "w-full flex-1",
-        isExtension && "min-w-[400px]"
+        isExtension && "min-w-[300px]"
       )}
     >
       <NavBar

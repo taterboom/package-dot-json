@@ -29,5 +29,6 @@ export function getStarsCount(dom: Document) {
 }
 
 export function isGithubRepoPath(url: string) {
-  return /.*github\.com\/[^/]+\/[^/]+/.test(url)
+  // return /.*github\.com\/[^/]+\/[^/]+/.test(url)
+  return /.*github\.com/.test(url)
 }

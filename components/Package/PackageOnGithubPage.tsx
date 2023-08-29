@@ -39,8 +39,12 @@ const PackageOnGithubPage = (props: PackageOnGithubPageProps) => {
     }
     chrome.runtime.onMessage.addListener(onContentScriptQueryedPackageJson)
     init()
+    chrome.tabs.onActivated.addListener(init)
+    chrome.webNavigation.onCommitted.addListener(init)
     return () => {
       chrome.runtime.onMessage.removeListener(onContentScriptQueryedPackageJson)
+      chrome.tabs.onActivated.removeListener(init)
+      chrome.webNavigation.onCommitted.removeListener(init)
     }
   }, [])
 
